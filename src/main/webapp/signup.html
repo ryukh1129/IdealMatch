@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; background-color: #f7f9fc; margin: 0; }
+    .container { max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+    h2 { text-align: center; color: #2b4c7e; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; } /* box-sizing 추가로 레이아웃 깨짐 방지 */
+    button { margin-top: 20px; width: 100%; padding: 10px; background-color: #2b4c7e; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #1e345b; }
+  </style>
+
+  <script>
+    function checkForm() {
+        // form 안에 있는 모든 input과 select 태그를 가져옵니다.
+        var inputs = document.querySelectorAll('input, select');
+
+        for (var i = 0; i < inputs.length; i++) {
+            // 1. 파일 입력(사진)은 보류라고 하셨으니 검사에서 제외합니다 (type != "file")
+            // 2. 값이 비어있는지 확인합니다 (value == "")
+            if (inputs[i].type !== "file" && inputs[i].value.trim() === "") {
+                // 해당 입력창의 바로 위에 있는 label 텍스트를 가져와서 경고창에 띄웁니다.
+                var labelText = inputs[i].previousElementSibling.innerText;
+                alert("[" + labelText + "] 항목을 입력해주세요.");
+                
+                inputs[i].focus(); // 비어있는 칸으로 커서 이동
+                return false; // 전송 중단
+            }
+        }
+        return true; // 모두 입력되었으면 전송 허용
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2>회원가입</h2>
+    
+    <form action="SignupServlet" method="post" onsubmit="return checkForm()">
+      
+      <label>프로필 사진</label>
+      <input type="file" name="profile_photo" accept="image/*">
+
+      <label>아이디 (ID)</label>
+      <input type="text" name="id">
+      
+      <label>비밀번호</label>
+      <input type="password" name="password">
+
+      <label>Email</label>
+      <input type="email" name="email">
+
+      <label>이름</label>
+      <input type="text" name="name">
+
+      <label>성별</label>
+      <select name="gender">
+        <option value="">선택하세요</option> <option value="남성">남성</option>
+        <option value="여성">여성</option>
+      </select>
+
+      <label>생년월일</label>
+      <input type="date" name="birth_date">
+
+      <label>키(cm)</label>
+      <input type="number" name="height">
+
+      <label>직업</label>
+      <input type="text" name="job">
+
+      <label>지역</label>
+      <input type="text" name="region">
+
+      <label>취미</label>
+      <input type="text" name="hobby">
+
+      <label>성격 유형(MBTI)</label>
+      <input type="text" name="personality_type">
+
+      <button type="submit">가입하기</button>
+    </form>
+  </div>
+</body>
+</html>
