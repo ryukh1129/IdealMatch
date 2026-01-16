@@ -38,9 +38,6 @@ public class SignupServlet extends HttpServlet {
 
 		int height = (heightStr != null && !heightStr.isEmpty()) ? Integer.parseInt(heightStr) : 0;
 
-		// ==========================================
-		// ★ DB 연결 정보 (본인 것으로 수정 필수) ★
-		// ==========================================
 		String dbUrl = "jdbc:oracle:thin:@localhost:9999:orcl";
 		String dbUser = "DB2025_501_2"; // 아이디 확인!
 		String dbPw = "qwer1234";   // 비번 확인!
@@ -80,8 +77,6 @@ public class SignupServlet extends HttpServlet {
 			// ==========================================
 			// 2. Member 테이블 입력 (시퀀스 적용)
 			// ==========================================
-			// SEQ_MEMBER_ID.NEXTVAL : Member_ID 자동 생성
-			// ? (첫번째 물음표) : 아까 위에서 획득한 newAccountId를 넣음 (외래키 연결)
 			String sqlMember = "INSERT INTO Member (Member_ID, Account_ID, Name, Gender, Birth_DATE, Height, Job, Region, Hobby, Personality_TYPE, Joined_AT) VALUES (SEQ_MEMBER_ID.NEXTVAL, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, ?, ?, SYSDATE)";
 			
 			pstmtMember = conn.prepareStatement(sqlMember);
@@ -103,8 +98,8 @@ public class SignupServlet extends HttpServlet {
 			out.println("<style>body { font-family: 'Pretendard', sans-serif; text-align: center; margin-top: 50px; } button { background: #2b4c7e; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }</style>");
 			out.println("</head><body>");
 			out.println("<h2>🎉 회원가입 성공!</h2>");
-			out.println("<p>" + name + "님 (" + id + ") 환영합니다!</p>");
-			out.println("<button onclick=\"location.href='login.html'\">로그인 하러 가기</button>");
+			out.println("<p>" + name + "(" + id + ")님 환영합니다!</p>");
+			out.println("<button onclick=\"location.href='MainServlet'\">로그인 하러 가기</button>");
 			out.println("</body></html>");
 
 		} catch (Exception e) {

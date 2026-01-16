@@ -32,13 +32,23 @@ public class PreferenceServlet extends HttpServlet {
 			return;
 		}
 
-		// 2. 화면 데이터 받기
-		String ageMin = request.getParameter("age_min");
-		String ageMax = request.getParameter("age_max");
-		String gender = request.getParameter("preferred_gender");
-		String region = request.getParameter("preferred_region");
-		String hobby = request.getParameter("preferred_hobby");
-		String personality = request.getParameter("preferred_personality");
+		// 2. 화면 데이터 받기 (공백 처리 로직 추가)
+        String ageMinStr = request.getParameter("age_min");
+        String ageMaxStr = request.getParameter("age_max");
+        String gender = request.getParameter("preferred_gender");
+        String region = request.getParameter("preferred_region");
+        String hobby = request.getParameter("preferred_hobby");
+        String personality = request.getParameter("preferred_personality");
+
+        // 숫자가 비어있으면 0으로 저장 (0은 '제한 없음'으로 취급할 예정)
+        int ageMin = (ageMinStr != null && !ageMinStr.isEmpty()) ? Integer.parseInt(ageMinStr) : 0;
+        int ageMax = (ageMaxStr != null && !ageMaxStr.isEmpty()) ? Integer.parseInt(ageMaxStr) : 0;
+        
+        // 문자열이 비어있으면 NULL로 저장
+        if(gender != null && gender.isEmpty()) gender = null;
+        if(region != null && region.isEmpty()) region = null;
+        if(hobby != null && hobby.isEmpty()) hobby = null;
+        if(personality != null && personality.isEmpty()) personality = null;
 
 		// 3. DB 연결 정보 (PuTTY 터널링)
 		String dbUrl = "jdbc:oracle:thin:@localhost:9999:orcl";
@@ -88,19 +98,18 @@ public class PreferenceServlet extends HttpServlet {
             // 1. ON (p.Member_ID = ?) -> 검사할 ID
             pstmtInsert.setInt(1, memberID);
             
-            // 2. UPDATE SET ... (6개) -> 수정할 값들
-            pstmtInsert.setInt(2, Integer.parseInt(ageMin));
-            pstmtInsert.setInt(3, Integer.parseInt(ageMax));
+         // 2. UPDATE SET ... 
+            pstmtInsert.setInt(2, ageMin);
+            pstmtInsert.setInt(3, ageMax);
             pstmtInsert.setString(4, gender);
             pstmtInsert.setString(5, region);
             pstmtInsert.setString(6, hobby);
             pstmtInsert.setString(7, personality);
             
-            // 3. INSERT VALUES ... (Member_ID 포함 7개) -> 새로 만들 값들
-            // (참고: 첫번째 물음표는 Member_ID입니다)
+            // 3. INSERT VALUES ...
             pstmtInsert.setInt(8, memberID); 
-            pstmtInsert.setInt(9, Integer.parseInt(ageMin));
-            pstmtInsert.setInt(10, Integer.parseInt(ageMax));
+            pstmtInsert.setInt(9, ageMin);
+            pstmtInsert.setInt(10, ageMax);
             pstmtInsert.setString(11, gender);
             pstmtInsert.setString(12, region);
             pstmtInsert.setString(13, hobby);
@@ -108,13 +117,13 @@ public class PreferenceServlet extends HttpServlet {
             
             pstmtInsert.executeUpdate();
             
-            // 저장 후 다시 매칭 화면으로 이동
-            response.sendRedirect("matching.html");
+            // ★ 중요: 저장 후 'MatchingServlet'으로 이동해야 필터링된 화면이 뜸
+            response.sendRedirect("MatchingServlet");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			PrintWriter out = response.getWriter();
-			out.println("<script>alert('저장 실패: " + e.getMessage() + "'); history.back();</script>");
+			out.println("<script>alert('저장 실패: " + e.getMessage() + "빈칸을 채워주세요");
 		} finally {
 			try { if (rs != null) rs.close(); } catch (Exception e) {}
 			try { if (pstmtFindID != null) pstmtFindID.close(); } catch (Exception e) {}

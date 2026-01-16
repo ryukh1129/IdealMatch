@@ -49,21 +49,36 @@ public class LoginServlet extends HttpServlet {
 			
 			// 4. 결과 확인
 			if (rs.next()) {
-				// ⭕ 로그인 성공 (일치하는 데이터가 있음)
+				// ⭕ 로그인 성공!
 				
-				// [세션 생성] 서버에 "이 사람은 로그인한 사람이야"라고 메모해두는 것
+				// ==========================================
+				// ★ [추가된 기능] 마지막 로그인 시간 기록하기 (UPDATE)
+				// ==========================================
+				// 1. 기존 pstmt는 이미 썼으니 닫아주고 새로 만듭니다.
+				pstmt.close(); 
+				
+				// 2. 현재 시간(SYSDATE)으로 Last_LOGIN 컬럼을 업데이트
+				String sqlUpdate = "UPDATE Account SET Last_LOGIN = SYSDATE WHERE Username = ?";
+				PreparedStatement pstmtUpdate = conn.prepareStatement(sqlUpdate);
+				pstmtUpdate.setString(1, id);
+				pstmtUpdate.executeUpdate(); // 실행!
+				
+				pstmtUpdate.close(); // 자원 정리
+				// ==========================================
+				
+				// [세션 생성]
 				HttpSession session = request.getSession();
-				session.setAttribute("userID", id); // 세션에 아이디 저장
+				session.setAttribute("userID", id); 
 				
-				// 메인 화면(index.html)으로 이동
-				response.sendRedirect("matching.html");
+				// 메인 화면으로 이동
+				response.sendRedirect("MatchingServlet"); // 혹은 MainServlet
 				
 			} else {
-				// ❌ 로그인 실패 (일치하는 데이터가 없음)
+				// ❌ 로그인 실패
 				PrintWriter out = response.getWriter();
 				out.println("<script>");
 				out.println("alert('ID 및 패스워드를 확인하세요');");
-				out.println("history.back();"); // 다시 로그인 화면으로 돌아가기
+				out.println("history.back();"); 
 				out.println("</script>");
 			}
 			
