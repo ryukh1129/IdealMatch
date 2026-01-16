@@ -95,6 +95,9 @@ public class MainServlet extends HttpServlet {
 
 			out.println("</div></body></html>");
 
-		} catch (Exception e) { e.printStackTrace(); } finally { try { if(conn!=null) conn.close(); } catch(Exception e){} }
+		} catch (Exception e) {
+			e.printStackTrace();
+			out.println("<p><b>원인:</b> " + e.getMessage() + "</p>");
+		} finally { try { if(conn!=null) conn.close(); } catch(Exception e){} }
 	}
 }
